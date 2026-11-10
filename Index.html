@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOCK IN</title>
+  <style>
+    :root {
+      --bg-color: #000000;
+      --card-bg: #121212;
+      --accent-color: #ffffff;
+      --text-muted: #888888;
+      --border-color: #222222;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--accent-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      max-height: 850px;
+      background: var(--bg-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    h1, h2 {
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title {
+      font-size: 32px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    /* Inputs & Buttons */
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #444;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: #fff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--border-color);
+    }
+
+    /* App Header & Navigation */
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      border-bottom: 2px solid #fff;
+    }
+
+    .badge {
+      position: absolute;
+      top: 8px;
+      right: 20px;
+      background: #ff3b30;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    /* Chat & Friend Lists */
+    .item-list {
+      flex: 1;
+      overflow-y: auto;
+      list-style: none;
+    }
+
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .list-item:hover {
+      background: var(--card-bg);
+    }
+
+    /* Message View */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message.sent {
+      align-self: flex-end;
+      background: #fff;
+      color: #000;
+    }
+
+    .message.received {
+      align-self: flex-start;
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--border-color);
+    }
+
+    .chat-input-container {
+      display: flex;
+      padding: 12px;
+      border-top: 1px solid var(--border-color);
+      gap: 8px;
+    }
+
+    .chat-input-container input {
+      flex: 1;
+    }
+
+    .chat-input-container button {
+      width: auto;
+      padding: 0 16px;
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Auth View -->
+    <div id="auth-view" class="view active">
+      <h1 class="brand-title">LOCK IN</h1>
+      <p class="subtitle">Pure Black Messaging Platform</p>
+      
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter username">
+      </div>
+      
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter password">
+      </div>
+      
+      <button class="btn" id="login-btn">Log In</button>
+      <button class="btn btn-secondary" id="register-btn">Create Account</button>
+    </div>
+
+    <!-- Main App View -->
+    <div id="main-view" class="view">
+      <div class="app-header">
+        <h2 id="current-user-display">LOCK IN</h2>
+        <button id="logout-btn" class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:12px;">Logout</button>
+      </div>
+
+      <div class="nav-tabs">
+        <button class="tab-btn active" id="tab-chats">Chats</button>
+        <button class="tab-btn" id="tab-friends">Friends</button>
+        <button class="tab-btn" id="tab-requests">Requests <span id="req-badge" class="badge" style="display:none;">0</span></button>
+      </div>
+
+      <div id="chats-content" class="item-list"></div>
+      <div id="friends-content" class="item-list" style="display:none;"></div>
+      <div id="requests-content" class="item-list" style="display:none;"></div>
+    </div>
+
+    <!-- Active Chat View -->
+    <div id="chat-view" class="view">
+      <div class="app-header">
+        <button id="back-to-main" class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:12px;">← Back</button>
+        <h3 id="active-chat-user">Friend</h3>
+        <div style="width:50px;"></div>
+      </div>
+      
+      <div id="chat-messages" class="chat-messages"></div>
+      
+      <div class="chat-input-container">
+        <input type="text" id="message-input" placeholder="Type a message...">
+        <button id="send-btn" class="btn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Integration Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // Insert your Firebase project credentials here
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+
+    // View Routing Helper
+    function showView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById(viewId).classList.add('active');
+    }
+
+    // Register Account
+    document.getElementById('register-btn').addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      if (!username || !password) return alert('Please enter both username and password.');
+
+      const userRef = doc(db, "users", username);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        alert('Username already taken.');
+        return;
+      }
+
+      await setDoc(userRef, {
+        password: password,
+        friends: [],
+        requests: []
+      });
+
+      alert('Account created! Please log in.');
+    });
+
+    // Log In
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      const userRef = doc(db, "users", username);
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists() || userSnap.data().password !== password) {
+        alert('Invalid credentials.');
+        return;
+      }
+
+      currentUser = username;
+      document.getElementById('current-user-display').innerText = username;
+      showView('main-view');
+      listenToUserData();
+    });
+
+    // Listen to User Data Updates
+    function listenToUserData() {
+      onSnapshot(doc(db, "users", currentUser), (snapshot) => {
+        const data = snapshot.data();
+        if (!data) return;
+
+        // Render Friends
+        const friendsList = document.getElementById('friends-content');
+        friendsList.innerHTML = (data.friends || []).map(f => `
+          <div class="list-item" onclick="openChat('${f}')">
+            <span>${f}</span>
+            <span style="color:var(--text-muted); font-size:12px;">Chat →</span>
+          </div>
+        `).join('');
+
+        // Render Requests
+        const reqBadge = document.getElementById('req-badge');
+        const reqs = data.requests || [];
+        if (reqs.length > 0) {
+          reqBadge.innerText = reqs.length;
+          reqBadge.style.display = 'inline-block';
+        } else {
+          reqBadge.style.display = 'none';
+        }
+
+        const requestsList = document.getElementById('requests-content');
+        requestsList.innerHTML = reqs.map(r => `
+          <div class="list-item">
+            <span>${r}</span>
+            <button onclick="acceptFriend('${r}')" class="btn" style="width:auto; padding:4px 10px; font-size:12px;">Accept</button>
+          </div>
+        `).join('');
+      });
+    }
+
+    // Tab Navigation
+    document.getElementById('tab-chats').addEventListener('click', () => switchTab('chats-content', 'tab-chats'));
+    document.getElementById('tab-friends').addEventListener('click', () => switchTab('friends-content', 'tab-friends'));
+    document.getElementById('tab-requests').addEventListener('click', () => switchTab('requests-content', 'tab-requests'));
+
+    function switchTab(contentId, tabId) {
+      ['chats-content', 'friends-content', 'requests-content'].forEach(id => {
+        document.getElementById(id).style.display = id === contentId ? 'block' : 'none';
+      });
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      currentUser = null;
+      showView('auth-view');
+    });
+  </script>
+</body>
+</html>
