@@ -1,417 +1,702 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LOCK IN</title>
-  <style>
-    :root {
-      --bg-color: #000000;
-      --card-bg: #121212;
-      --accent-color: #ffffff;
-      --text-muted: #888888;
-      --border-color: #222222;
-      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOCK IN</title>
+    <style>
+        :root {
+            --bg: #09090b;
+            --card: #18181b;
+            --border: #27272a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f4f4f5;
+            --muted: #a1a1aa;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-family);
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--accent-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
 
-    .app-container {
-      width: 100%;
-      max-width: 420px;
-      height: 100vh;
-      max-height: 850px;
-      background: var(--bg-color);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      border: 1px solid var(--border-color);
-    }
+        #app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100vh;
+            max-height: 932px;
+            background-color: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border: 1px solid var(--border);
+        }
 
-    /* Views */
-    .view {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      padding: 20px;
-      overflow-y: auto;
-    }
+        /* Screen Management */
+        .screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--bg);
+            z-index: 1;
+        }
 
-    .view.active {
-      display: flex;
-    }
+        .screen.active {
+            display: flex;
+            z-index: 2;
+        }
 
-    h1, h2 {
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
+        /* Auth Screen */
+        .auth-container {
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
 
-    .brand-title {
-      font-size: 32px;
-      margin-bottom: 8px;
-      text-align: center;
-    }
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
 
-    .subtitle {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
+        .brand-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
 
-    /* Inputs & Buttons */
-    .input-group {
-      margin-bottom: 16px;
-    }
+        .brand-header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
 
-    .input-group label {
-      display: block;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
 
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 14px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      color: #fff;
-      font-size: 15px;
-      outline: none;
-    }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
 
-    input:focus {
-      border-color: #444;
-    }
+        .input-field {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
 
-    .btn {
-      width: 100%;
-      padding: 14px;
-      background: #fff;
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 15px;
-      cursor: pointer;
-      margin-top: 8px;
-    }
+        .input-field:focus {
+            border-color: var(--accent);
+        }
 
-    .btn-secondary {
-      background: var(--card-bg);
-      color: #fff;
-      border: 1px solid var(--border-color);
-    }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 12px;
+            border: none;
+            background-color: var(--accent);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
 
-    /* App Header & Navigation */
-    .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-    }
+        .btn:active {
+            transform: scale(0.98);
+        }
 
-    .nav-tabs {
-      display: flex;
-      border-bottom: 1px solid var(--border-color);
-    }
+        .auth-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
 
-    .tab-btn {
-      flex: 1;
-      padding: 12px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      position: relative;
-    }
+        .auth-toggle span {
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-    .tab-btn.active {
-      color: #fff;
-      border-bottom: 2px solid #fff;
-    }
+        /* Main Screen Layout */
+        .app-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(10px);
+        }
 
-    .badge {
-      position: absolute;
-      top: 8px;
-      right: 20px;
-      background: #ff3b30;
-      color: #fff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 10px;
-    }
+        .app-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
 
-    /* Chat & Friend Lists */
-    .item-list {
-      flex: 1;
-      overflow-y: auto;
-      list-style: none;
-    }
+        .user-badge {
+            font-size: 0.85rem;
+            color: var(--muted);
+            background: var(--card);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
 
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px;
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-    }
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+        }
 
-    .list-item:hover {
-      background: var(--card-bg);
-    }
+        /* Navigation Bar */
+        .nav-bar {
+            display: flex;
+            border-top: 1px solid var(--border);
+            background-color: var(--bg);
+            padding: 0.5rem 0;
+        }
 
-    /* Message View */
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 0.75rem;
+            gap: 0.25rem;
+            position: relative;
+        }
 
-    .message {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.4;
-    }
+        .nav-item.active {
+            color: var(--accent);
+        }
 
-    .message.sent {
-      align-self: flex-end;
-      background: #fff;
-      color: #000;
-    }
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
 
-    .message.received {
-      align-self: flex-start;
-      background: var(--card-bg);
-      color: #fff;
-      border: 1px solid var(--border-color);
-    }
+        .badge {
+            position: absolute;
+            top: 4px;
+            right: 24%;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            display: none;
+        }
 
-    .chat-input-container {
-      display: flex;
-      padding: 12px;
-      border-top: 1px solid var(--border-color);
-      gap: 8px;
-    }
+        /* Tab Views */
+        .tab-view {
+            display: none;
+            padding: 1rem;
+            height: 100%;
+            overflow-y: auto;
+        }
 
-    .chat-input-container input {
-      flex: 1;
-    }
+        .tab-view.active {
+            display: block;
+        }
 
-    .chat-input-container button {
-      width: auto;
-      padding: 0 16px;
-      margin-top: 0;
-    }
-  </style>
+        /* List Items (Friends / Requests) */
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .item-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .item-info p {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-secondary { background: var(--border); color: var(--text); }
+        .btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        /* Search Section */
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Chat Screen */
+        .chat-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--bg);
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 0.75rem 1rem;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background-color: var(--accent);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--muted);
+            margin-top: 3rem;
+            font-size: 0.9rem;
+        }
+
+        /* Alert Toast */
+        .toast {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.75rem 1.25rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Auth View -->
-    <div id="auth-view" class="view active">
-      <h1 class="brand-title">LOCK IN</h1>
-      <p class="subtitle">Pure Black Messaging Platform</p>
-      
-      <div class="input-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" placeholder="Enter username">
-      </div>
-      
-      <div class="input-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter password">
-      </div>
-      
-      <button class="btn" id="login-btn">Log In</button>
-      <button class="btn btn-secondary" id="register-btn">Create Account</button>
+<div id="app-container">
+    <div id="toast" class="toast">Alert message</div>
+
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen" class="screen active">
+        <div class="auth-container">
+            <div class="brand-header">
+                <h1>LOCK IN</h1>
+                <p>Private real-time messenger</p>
+            </div>
+            
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="auth-username" class="input-field" placeholder="Choose a username..." required>
+                </div>
+                <div class="form-group">
+                    <label>Passcode</label>
+                    <input type="password" id="auth-password" class="input-field" placeholder="Enter passcode..." required>
+                </div>
+                <button type="submit" class="btn" id="auth-btn">Lock In</button>
+            </form>
+
+            <div class="auth-toggle">
+                <span id="toggle-auth-text" onclick="toggleAuthMode()">Need to create an account?</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Main App View -->
-    <div id="main-view" class="view">
-      <div class="app-header">
-        <h2 id="current-user-display">LOCK IN</h2>
-        <button id="logout-btn" class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:12px;">Logout</button>
-      </div>
+    <!-- MAIN APP SCREEN -->
+    <div id="main-screen" class="screen">
+        <div class="app-header">
+            <h2>LOCK IN</h2>
+            <div class="user-badge" id="current-user-display">@user</div>
+        </div>
 
-      <div class="nav-tabs">
-        <button class="tab-btn active" id="tab-chats">Chats</button>
-        <button class="tab-btn" id="tab-friends">Friends</button>
-        <button class="tab-btn" id="tab-requests">Requests <span id="req-badge" class="badge" style="display:none;">0</span></button>
-      </div>
+        <div class="app-content">
+            <!-- CHATS TAB -->
+            <div id="chats-tab" class="tab-view active">
+                <div class="list-container" id="chats-list">
+                    <div class="empty-state">No active chats.<br>Add friends to start messaging!</div>
+                </div>
+            </div>
 
-      <div id="chats-content" class="item-list"></div>
-      <div id="friends-content" class="item-list" style="display:none;"></div>
-      <div id="requests-content" class="item-list" style="display:none;"></div>
+            <!-- FRIENDS TAB -->
+            <div id="friends-tab" class="tab-view">
+                <div class="search-box">
+                    <input type="text" id="search-username" class="input-field" placeholder="Search handle...">
+                    <button class="btn-sm btn-primary" onclick="sendFriendRequest()">Add</button>
+                </div>
+
+                <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem;">YOUR FRIENDS</h3>
+                <div class="list-container" id="friends-list">
+                    <div class="empty-state">No friends added yet.</div>
+                </div>
+            </div>
+
+            <!-- REQUESTS TAB -->
+            <div id="requests-tab" class="tab-view">
+                <h3 style="font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem;">PENDING REQUESTS</h3>
+                <div class="list-container" id="requests-list">
+                    <div class="empty-state">No pending requests.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAV BAR -->
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="switchTab('chats')">
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                <span>Chats</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('friends')">
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Friends</span>
+            </div>
+            <div class="nav-item" onclick="switchTab('requests')">
+                <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <span>Requests</span>
+                <div id="requests-badge" class="badge">0</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Active Chat View -->
-    <div id="chat-view" class="view">
-      <div class="app-header">
-        <button id="back-to-main" class="btn btn-secondary" style="width:auto; padding:6px 12px; font-size:12px;">← Back</button>
-        <h3 id="active-chat-user">Friend</h3>
-        <div style="width:50px;"></div>
-      </div>
-      
-      <div id="chat-messages" class="chat-messages"></div>
-      
-      <div class="chat-input-container">
-        <input type="text" id="message-input" placeholder="Type a message...">
-        <button id="send-btn" class="btn">Send</button>
-      </div>
+    <!-- CHAT CONVERSATION SCREEN -->
+    <div id="chat-screen" class="screen">
+        <div class="chat-header">
+            <button class="back-btn" onclick="closeChat()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </button>
+            <h3 id="chat-partner-name">@friend</h3>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="message-input" class="input-field" placeholder="Type a message..." onkeypress="handleMessageKeyPress(event)">
+            <button class="btn-sm btn-primary" onclick="sendMessage()" style="padding: 0 1.2rem;">Send</button>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- Firebase Integration Script -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    // Insert your Firebase project credentials here
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
+<script>
+    // State Store (Local Storage simulation for independent running)
+    let isLoginMode = false;
     let currentUser = null;
+    let activeChatFriend = null;
 
-    // View Routing Helper
-    function showView(viewId) {
-      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-      document.getElementById(viewId).classList.add('active');
+    // Database Mock (Stored in Browser LocalStorage for complete local execution)
+    function getDB(key) {
+        return JSON.parse(localStorage.getItem('lockin_' + key) || '{}');
+    }
+    function setDB(key, val) {
+        localStorage.setItem('lockin_' + key, JSON.stringify(val));
     }
 
-    // Register Account
-    document.getElementById('register-btn').addEventListener('click', async () => {
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const password = document.getElementById('password').value;
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
 
-      if (!username || !password) return alert('Please enter both username and password.');
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-btn').innerText = isLoginMode ? 'Sign In' : 'Lock In';
+        document.getElementById('toggle-auth-text').innerText = isLoginMode ? "Don't have an account? Sign Up" : "Need to create an account?";
+    }
 
-      const userRef = doc(db, "users", username);
-      const userSnap = await getDoc(userRef);
+    function handleAuth(e) {
+        e.preventDefault();
+        const user = document.getElementById('auth-username').value.trim().toLowerCase();
+        const pass = document.getElementById('auth-password').value;
 
-      if (userSnap.exists()) {
-        alert('Username already taken.');
-        return;
-      }
+        if (!user || !pass) return;
 
-      await setDoc(userRef, {
-        password: password,
-        friends: [],
-        requests: []
-      });
+        let users = getDB('users');
 
-      alert('Account created! Please log in.');
-    });
-
-    // Log In
-    document.getElementById('login-btn').addEventListener('click', async () => {
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const password = document.getElementById('password').value;
-
-      const userRef = doc(db, "users", username);
-      const userSnap = await getDoc(userRef);
-
-      if (!userSnap.exists() || userSnap.data().password !== password) {
-        alert('Invalid credentials.');
-        return;
-      }
-
-      currentUser = username;
-      document.getElementById('current-user-display').innerText = username;
-      showView('main-view');
-      listenToUserData();
-    });
-
-    // Listen to User Data Updates
-    function listenToUserData() {
-      onSnapshot(doc(db, "users", currentUser), (snapshot) => {
-        const data = snapshot.data();
-        if (!data) return;
-
-        // Render Friends
-        const friendsList = document.getElementById('friends-content');
-        friendsList.innerHTML = (data.friends || []).map(f => `
-          <div class="list-item" onclick="openChat('${f}')">
-            <span>${f}</span>
-            <span style="color:var(--text-muted); font-size:12px;">Chat →</span>
-          </div>
-        `).join('');
-
-        // Render Requests
-        const reqBadge = document.getElementById('req-badge');
-        const reqs = data.requests || [];
-        if (reqs.length > 0) {
-          reqBadge.innerText = reqs.length;
-          reqBadge.style.display = 'inline-block';
+        if (isLoginMode) {
+            if (users[user] && users[user].pass === pass) {
+                currentUser = user;
+                launchApp();
+            } else {
+                showToast('Invalid credentials!');
+            }
         } else {
-          reqBadge.style.display = 'none';
+            if (users[user]) {
+                showToast('Username already taken!');
+            } else {
+                users[user] = { pass: pass, friends: [], requests: [] };
+                setDB('users', users);
+                currentUser = user;
+                launchApp();
+            }
+        }
+    }
+
+    function launchApp() {
+        document.getElementById('auth-screen').classList.remove('active');
+        document.getElementById('main-screen').classList.add('active');
+        document.getElementById('current-user-display').innerText = '@' + currentUser;
+        renderAll();
+        setInterval(renderAll, 1000); // Polling for live updates
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        document.getElementById(tab + '-tab').classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    function sendFriendRequest() {
+        const target = document.getElementById('search-username').value.trim().toLowerCase();
+        if (!target) return;
+        if (target === currentUser) return showToast("Can't add yourself!");
+
+        let users = getDB('users');
+        if (!users[target]) return showToast('User not found!');
+
+        if (users[target].requests.includes(currentUser) || users[target].friends.includes(currentUser)) {
+            return showToast('Request already pending or added!');
         }
 
-        const requestsList = document.getElementById('requests-content');
-        requestsList.innerHTML = reqs.map(r => `
-          <div class="list-item">
-            <span>${r}</span>
-            <button onclick="acceptFriend('${r}')" class="btn" style="width:auto; padding:4px 10px; font-size:12px;">Accept</button>
-          </div>
+        users[target].requests.push(currentUser);
+        setDB('users', users);
+        document.getElementById('search-username').value = '';
+        showToast('Request sent to @' + target);
+        renderAll();
+    }
+
+    function acceptRequest(fromUser) {
+        let users = getDB('users');
+        users[currentUser].requests = users[currentUser].requests.filter(u => u !== fromUser);
+        users[currentUser].friends.push(fromUser);
+        users[fromUser].friends.push(currentUser);
+        setDB('users', users);
+        renderAll();
+        showToast('Connected with @' + fromUser);
+    }
+
+    function openChat(friend) {
+        activeChatFriend = friend;
+        document.getElementById('chat-partner-name').innerText = '@' + friend;
+        document.getElementById('chat-screen').classList.add('active');
+        renderMessages();
+    }
+
+    function closeChat() {
+        activeChatFriend = null;
+        document.getElementById('chat-screen').classList.remove('active');
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('message-input');
+        const text = input.value.trim();
+        if (!text || !activeChatFriend) return;
+
+        let chats = getDB('chats');
+        let chatKey = [currentUser, activeChatFriend].sort().join('_');
+        if (!chats[chatKey]) chats[chatKey] = [];
+
+        chats[chatKey].push({ sender: currentUser, text: text, time: Date.now() });
+        setDB('chats', chats);
+        input.value = '';
+        renderMessages();
+    }
+
+    function handleMessageKeyPress(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+
+    function renderMessages() {
+        if (!activeChatFriend) return;
+        let chats = getDB('chats');
+        let chatKey = [currentUser, activeChatFriend].sort().join('_');
+        let list = chats[chatKey] || [];
+
+        const container = document.getElementById('chat-messages');
+        container.innerHTML = list.map(m => `
+            <div class="message ${m.sender === currentUser ? 'sent' : 'received'}">
+                ${m.text}
+            </div>
         `).join('');
-      });
+        container.scrollTop = container.scrollHeight;
     }
 
-    // Tab Navigation
-    document.getElementById('tab-chats').addEventListener('click', () => switchTab('chats-content', 'tab-chats'));
-    document.getElementById('tab-friends').addEventListener('click', () => switchTab('friends-content', 'tab-friends'));
-    document.getElementById('tab-requests').addEventListener('click', () => switchTab('requests-content', 'tab-requests'));
+    function renderAll() {
+        let users = getDB('users');
+        let myData = users[currentUser] || { friends: [], requests: [] };
 
-    function switchTab(contentId, tabId) {
-      ['chats-content', 'friends-content', 'requests-content'].forEach(id => {
-        document.getElementById(id).style.display = id === contentId ? 'block' : 'none';
-      });
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+        // Badge
+        const badge = document.getElementById('requests-badge');
+        if (myData.requests.length > 0) {
+            badge.innerText = myData.requests.length;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+
+        // Friends List
+        const friendsList = document.getElementById('friends-list');
+        if (myData.friends.length === 0) {
+            friendsList.innerHTML = '<div class="empty-state">No friends added yet.</div>';
+        } else {
+            friendsList.innerHTML = myData.friends.map(f => `
+                <div class="item-card">
+                    <div class="item-info">
+                        <h4>@${f}</h4>
+                    </div>
+                    <button class="btn-sm btn-primary" onclick="openChat('${f}')">Chat</button>
+                </div>
+            `).join('');
+        }
+
+        // Requests List
+        const requestsList = document.getElementById('requests-list');
+        if (myData.requests.length === 0) {
+            requestsList.innerHTML = '<div class="empty-state">No pending requests.</div>';
+        } else {
+            requestsList.innerHTML = myData.requests.map(r => `
+                <div class="item-card">
+                    <div class="item-info">
+                        <h4>@${r}</h4>
+                        <p>wants to lock in with you</p>
+                    </div>
+                    <button class="btn-sm btn-primary" onclick="acceptRequest('${r}')">Accept</button>
+                </div>
+            `).join('');
+        }
+
+        // Chats Tab
+        const chatsList = document.getElementById('chats-list');
+        if (myData.friends.length === 0) {
+            chatsList.innerHTML = '<div class="empty-state">No active chats.<br>Add friends to start messaging!</div>';
+        } else {
+            chatsList.innerHTML = myData.friends.map(f => `
+                <div class="item-card" onclick="openChat('${f}')" style="cursor:pointer;">
+                    <div class="item-info">
+                        <h4>@${f}</h4>
+                        <p>Tap to open chat</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        if (activeChatFriend) renderMessages();
     }
-
-    // Logout
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      currentUser = null;
-      showView('auth-view');
-    });
-  </script>
+</script>
 </body>
 </html>
